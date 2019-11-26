@@ -405,7 +405,9 @@ namespace fc { namespace crypto { namespace r1 {
        self.my->_key = k;
 	   // EC_KEY_generate_key 是openssl的库函数
 	   // 功能：根据密钥参数生成ECC公私钥
-       if( !EC_KEY_generate_key( self.my->_key ) ) //生成私钥和公钥
+
+	   // 这样一句EC_KEY_generate_key库函数的生成私钥，够随机吗?
+       if( !EC_KEY_generate_key( self.my->_key ) ) //生成私钥和公钥, self.my->_key就是包含了公私钥的openssl结构
        {
           FC_THROW_EXCEPTION( exception, "ecc key generation error" );
 
