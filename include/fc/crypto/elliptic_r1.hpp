@@ -151,6 +151,24 @@ namespace fc {
         }
      };
 
+	
+	/*
+	typedef fc::sha256                  private_key_secret;
+	
+	class fc::sha256 
+	{
+	  public:
+	    sha256();
+	    explicit sha256( const string& hex_str );
+	    explicit sha256( const char *data, size_t size );
+
+	    string str()const;
+	    operator string()const;
+
+	    char*    data()const;
+	    …………
+    }
+	*/
      struct private_key_shim : public crypto::shim<private_key_secret> {
         using crypto::shim<private_key_secret>::shim;
         using signature_type = signature_shim;
