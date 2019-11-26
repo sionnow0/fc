@@ -398,10 +398,14 @@ namespace fc { namespace crypto { namespace r1 {
     private_key private_key::generate()
     {
        private_key self;
-       EC_KEY* k = EC_KEY_new_by_curve_name( NID_X9_62_prime256v1 );
+	   //首先通过椭圆曲线的标识符NID_X9_62_prime256v1生成一个EC_KEY, 
+	   //通过这种方式生成的EC_KEY里已经包含了椭圆曲线的参数。否则，需要手动设置EC_GROUP
+       EC_KEY* k = EC_KEY_new_by_curve_name( NID_X9_62_prime256v1 ); 
        if( !k ) FC_THROW_EXCEPTION( exception, "Unable to generate EC key" );
        self.my->_key = k;
-       if( !EC_KEY_generate_key( self.my->_key ) )
+	   // EC_KEY_generate_key 是openssl的库函数
+	   // 功能：根据密钥参数生成ECC公私钥
+       if( !EC_KEY_generate_key( self.my->_key ) ) //生成私钥和公钥
        {
           FC_THROW_EXCEPTION( exception, "ecc key generation error" );
 
