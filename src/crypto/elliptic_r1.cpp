@@ -445,6 +445,7 @@ namespace fc { namespace crypto { namespace r1 {
 		while (BN_is_zero(priv_key));  
 
 		// 所以重点是BN_rand_range，这个会生成随机数
+		
 	  
 		if (eckey->pub_key == NULL)  
 			{  
