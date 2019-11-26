@@ -395,6 +395,96 @@ namespace fc { namespace crypto { namespace r1 {
        return sec;
     }
 
+	/*
+	生成EC_KEY的私钥和公钥
+	[plain] view plaincopy
+	int EC_KEY_generate_key(EC_KEY *eckey)	
+		{	  
+		int ok = 0;  
+		BN_CTX	*ctx = NULL;  
+		BIGNUM	*priv_key = NULL, *order = NULL;  
+		EC_POINT *pub_key = NULL;  
+	  
+#ifdef OPENSSL_FIPS  
+		if(FIPS_selftest_failed())	
+			{  
+			FIPSerr(FIPS_F_EC_KEY_GENERATE_KEY,FIPS_R_FIPS_SELFTEST_FAILED);  
+			return 0;  
+			}  
+#endif  
+	  
+		if (!eckey || !eckey->group)  
+			{  
+			ECerr(EC_F_EC_KEY_GENERATE_KEY, ERR_R_PASSED_NULL_PARAMETER);  
+			return 0;  
+			}  
+	  
+		if ((order = BN_new()) == NULL) goto err;  
+		if ((ctx = BN_CTX_new()) == NULL) goto err;  
+	  
+		if (eckey->priv_key == NULL)  
+			{  
+			priv_key = BN_new();  
+			if (priv_key == NULL)  
+				goto err;  
+			}  
+		else  
+			priv_key = eckey->priv_key;  
+	  
+		if (!EC_GROUP_get_order(eckey->group, order, ctx))	
+			goto err;  
+	  
+#ifdef OPENSSL_FIPS  
+		if (!fips_check_ec_prng(eckey))  
+			goto err;  
+#endif  
+	  
+		do // 开始随机化私钥数据，脑钱包可以在这里设置随机数据（256bits的Hash）	
+			if (!BN_rand_range(priv_key, order))  
+				goto err;  
+		while (BN_is_zero(priv_key));  
+
+		// 所以重点是BN_rand_range，这个会生成随机数
+	  
+		if (eckey->pub_key == NULL)  
+			{  
+			pub_key = EC_POINT_new(eckey->group);  
+			if (pub_key == NULL)  
+				goto err;  
+			}  
+		else  
+			pub_key = eckey->pub_key;  
+	  
+		if (!EC_POINT_mul(eckey->group, pub_key, priv_key, NULL, NULL, ctx))  
+			goto err;  
+	  
+		eckey->priv_key = priv_key;  
+		eckey->pub_key	= pub_key;	
+	  
+#ifdef OPENSSL_FIPS  
+		if(!fips_check_ec(eckey))  
+			{  
+			eckey->priv_key = NULL;  
+			eckey->pub_key	= NULL;  
+				goto err;  
+			}  
+#endif  
+	  
+		ok=1;  
+	  
+	err:	  
+		if (order)	
+			BN_free(order);  
+		if (pub_key  != NULL && eckey->pub_key	== NULL)  
+			EC_POINT_free(pub_key);  
+		if (priv_key != NULL && eckey->priv_key == NULL)  
+			BN_free(priv_key);	
+		if (ctx != NULL)  
+			BN_CTX_free(ctx);  
+		return(ok);  
+		} 
+	*/
+
     private_key private_key::generate()
     {
        private_key self;
