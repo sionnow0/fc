@@ -202,6 +202,12 @@ namespace fc { namespace ecc {
          FC_THROW_EXCEPTION( exception, "get private key failed" );
        }
        int nbytes = BN_num_bytes(bn);
+	   /*
+	   11．与字符串的转换函数
+int BN_bn2bin(const BIGNUM *a, unsigned char *to);将abs（a）转化为字符串存入to，to的空间必须大于BN_num_bytes(a)
+ 
+ BIGNUM *BN_bin2bn(const unsigned char *s, int len, BIGNUM *ret);将s中的len位的正整数转化为大数
+	   */
        BN_bn2bin(bn, &((unsigned char*)&sec)[32-nbytes] );
        return sec;
     }
